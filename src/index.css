@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Titan+One&display=swap');
+html{
+  min-height: 100vh;
+  background-color: #e0e0e0;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Poppins','Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.nav-justified .nav-item{
+  font-weight: bold;
+}
+.addTransactionBtn:hover{
+  padding: 5px 15px;
+  background-color: black;
+}
+button.more:hover{
+  border: 2px solid #006064;
+  background-color: #006064;
+}
+@media (max-width: 800px) {
+  .flex-container{
+    padding: 0;
+  }
+
+  .flex-container .box{
+    position:relative;
+    min-width: 70px;
+    
+  }
+  .box span {
+    font-size: 10px;
+    margin-left: 2px;
+    padding-left: 0;
+  }
+  .box p{
+    margin: 0;
+    padding-left: 0;
+  }
+  thead th{
+    font-size: 9px;
+  }
+  tbody td {
+    font-size: 10px;
+  }
+  tbody .status{
+    font-size: 9px;
+    padding: 2px;
+  }
+  .box img{
+    padding: 0;
+  }
+  
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+a.nav-link  {
+  color: #ffffff;
+  font-size: 17px;
+  
+}
