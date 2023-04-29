@@ -37,25 +37,25 @@ app.post('/signup', (req, res) => {
     const userPhoneNo = req.body.userPhoneNo
 
     // bcrypt.hash(userPassword, 10, (err, newPassword) => {
-        // if (err) {
-        //     console.log(err)
-        // } else {
-            // console.log(newPassword)
-            newUser = { userEmail, userPassword, userFname, userLname, userDateOfBirth, userPhoneNo }
-            db.query("INSERT INTO userprofile (userFirstName, userLastName, useremail, userPhoneNumber, userDateOfBirth, userpassword) VALUES (?, ?, ?, ? , ? , ?) ", [userFname, userLname, userEmail, userPhoneNo, userDateOfBirth, userPassword], (err, result) => {
-                res.json({userId:result.insertId })
-                console.log(result.insertId)
-                console.log(result)
+    // if (err) {
+    //     console.log(err)
+    // } else {
+    // console.log(newPassword)
+    newUser = { userEmail, userPassword, userFname, userLname, userDateOfBirth, userPhoneNo }
+    db.query("INSERT INTO userprofile (userFirstName, userLastName, useremail, userPhoneNumber, userDateOfBirth, userpassword) VALUES (?, ?, ?, ? , ? , ?) ", [userFname, userLname, userEmail, userPhoneNo, userDateOfBirth, userPassword], (err, result) => {
+        res.json({ userId: result.insertId })
+        console.log(result.insertId)
+        console.log(result)
 
-                if (err) {
-                    return console.log(err.message)
-                }
-                console.log(result)
+        if (err) {
+            return console.log(err.message)
+        }
+        console.log(result)
 
-            })
-        // }
+    })
+    // }
     // })
-    
+
 
 
 
@@ -73,7 +73,7 @@ app.post('/createBusiness', (req, res) => {
     const userProfileId = req.body.userId
 
     db.query("INSERT INTO userbusiness (businessName, businessEmail, businessPhone, businessTill, businessDescription, userProfileId) VALUES (?, ?, ?, ?, ?,?)", [businessName, businessEmail, businessPhoneNo, businessTill, businessDescription, userProfileId], (err, result) => {
-        res.json({businessId:result.insertId })
+        res.json({ businessId: result.insertId })
         console.log(result.insertId)
         if (err) {
             console.log(err.message)
@@ -82,7 +82,7 @@ app.post('/createBusiness', (req, res) => {
 
         }
         console.log(result)
-        
+
     })
 
 })
@@ -111,45 +111,100 @@ app.post('/login', (req, res) => {
     })
 })
 
-app.post('/dashboard', (req,res)=>{
-    const {sql, params} = req.body;
-    db.query(sql,params, (err,result) =>{
-        if(err) throw err;
+app.post('/dashboard', (req, res) => {
+    const { sql, params } = req.body;
+    db.query(sql, params, (err, result) => {
+        if (err) throw err;
         const userData = result
-        res.send({userData})
+        res.send({ userData })
     })
 })
 
-app.post('/dashboard/addTransaction',(req,res) =>{
-    const{businessId, mpesaCode,customerName,customerPhone,transactionDateTime, amountReceived } = req.body
 
-    db.query("INSERT INTO transactions (idUserBusiness, transactionCodeNo, transactionCustomerName, transactionDateTime, transactionPhoneNo, transactionAmount) VALUES (?,?,?,?,?,?)", [businessId, mpesaCode,customerName, customerPhone,transactionDateTime, amountReceived ], (err,result)=>{
-        
-        res.json({message:res.status})
-        if (err) {
-                    return console.log(err.message)
-                }
-    })
-})
-app.get('/dashboard/business/:businessId', (req,res) =>{
+app.get('/dashboard/business/:businessId', (req, res) => {
     const businessId = req.params.businessId
     console.log(req.params.businessId)
-    db.query(`SELECT * FROM userBusiness WHERE iduserBusiness=?`,[businessId], (err,result)=>{
-        if(err) throw err;
+    db.query(`SELECT * FROM userBusiness WHERE iduserBusiness=?`, [businessId], (err, result) => {
+        if (err) throw err;
         const selectedBusiness = result
-        res.send({selectedBusiness})
+        res.send({ selectedBusiness })
         console.log(selectedBusiness)
         if (err) {
-                    return console.log(err.message)
-                }
+            return console.log(err.message)
+        }
     })
-   
+
 })
-app.post('addTransaction', (req,res)=>{
-    const {iduserBusiness,mpesaCode, customerName, customerPhone, transactionDateTime, amountReceived} = req.body
-    db.query("INSERT INTO transactions (idUserBusiness, transactionCode" )
+
+app.get('/dashboard/:currentBusinessId/transactions', (req, res) => {
+    const currentBusinessId = req.params.currentBusinessId
+    console.log(req.params.currentBusinessId)
+    db.query(`SELECT * FROM transactions WHERE idUserBusiness = ?`, [currentBusinessId], (err, result) => {
+        if (err) throw err;
+        const transactions = result
+        res.send({ transactions })
+        console.log(transactions)
+    })
+})
+app.post('/dashboard/addTransaction', (req, res) => {
+    const { businessId, mpesaCode, customerName, transactionDateTime, customerPhone, amountReceived } = req.body
+    db.query("INSERT INTO transactions (idUserBusiness, transactionCodeNo, transactionCustomerName, transactionDateTime, transactionPhoneNo, transactionAmount) VALUES(?,?,?,?,?,?)", [businessId, mpesaCode, customerName, transactionDateTime, customerPhone, amountReceived], (err, result) => {
+
+        db.query(`SELECT * FROM transactions WHERE idUserBusiness=?`, [businessId], (err, result) => {
+            const transactions = result
+            res.send({ transactions })
+            console.log(result)
+            if (err) {
+                return console.log(err.message)
+            }
+        })
+        console.log(result)
+        if (err) {
+            return console.log(err.message)
+        }
+
+    })
+})
+app.delete('/dashboard/:businessID/transaction/:transactionID', (req,res) =>{
+    
+    const transactionID = req.params.transactionID;
+    const businessID = req.params.businessID;
+
+    console.log(businessID)
+    console.log(transactionID)
+    db.query(`DELETE FROM transactions WHERE idAccountTransactions =?`, [transactionID], (err, result) =>{
+        db.query(`SELECT * FROM transactions WHERE idUserBusiness=?`, [businessID], (err, result)=>{
+            if(err) throw err;
+            const transactions = result;
+            res.send({transactions})
+            console.log(transactions)
+        })
+        
+    })
+
+})
+app.put(`/dashboard/:businessID/transaction/:transactionID`, (req, res) =>{
+    const {  mpesaCode, customerName, transactionDateTime, customerPhone, amountReceived } = req.body
+    const transactionID = req.params.transactionID;
+    const businessID = req.params.businessID;
+    console.log(businessID)
+    console.log(transactionID)
+    db.query(`UPDATE transactions SET transactionCodeNo=?,  transactionCustomerName=?, transactionDateTime=?, transactionPhoneNo=?, transactionAmount=? WHERE idAccountTransactions=?`, [mpesaCode,customerName,transactionDateTime,customerPhone,amountReceived,transactionID], (err, result) =>{
+        db.query(`SELECT * FROM transactions WHERE idUserBusiness=?`, [businessID], (err, result)=>{
+            if(err) throw err;
+            const transactions = result;
+            res.send({transactions})
+            console.log(transactions)
+        })
+        
+    })
 })
 app.listen(3001, () => {
     console.log("running on port 3001")
 })
+
+
+
+
+
 
